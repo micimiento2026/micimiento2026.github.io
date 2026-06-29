@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 // ============================================================
 // MiCimiento — App educativa de inversión bilingüe ES/EN
@@ -980,7 +980,7 @@ function Explorer({ lang, s }) {
             </div>
             <div style={{ textAlign: "right" }}>
               <div style={{ color: COLORS.mint, fontSize: 24, fontWeight: 700 }}>{ticker.price}</div>
-              <div style={{ color: COLORS.textFaint, fontSize: 12 }}>precio ref.</div>
+              <div style={{ color: COLORS.textFaint, fontSize: 12 }}>{lang === "es" ? "precio ref." : "ref. price"}</div>
             </div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
