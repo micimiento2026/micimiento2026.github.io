@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // ============================================================
 // MiCimiento — App educativa de inversión bilingüe ES/EN
@@ -469,6 +469,75 @@ const TICKERS = {
       ],
     },
   },
+  SPY: {
+    name: "SPDR S&P 500 ETF Trust",
+    type: "ETF",
+    price: "$612",
+    metrics: {
+      es: [
+        { k: "Expense Ratio (TER)", v: "0.0945%", def: "Ligeramente más caro que VOO (0.03%), aunque ambos replican el mismo índice. La diferencia en retornos es mínima a largo plazo." },
+        { k: "Índice que replica", v: "S&P 500", def: "Mismo índice que VOO. Las 500 empresas más grandes de EE.UU. por capitalización de mercado." },
+        { k: "AUM (activos totales)", v: "$620B", def: "El ETF más grande y líquido del mundo. Su tamaño garantiza spreads muy ajustados al comprar o vender." },
+        { k: "Liquidez diaria", v: "~$25B/día", def: "El activo más negociado del mundo. Ideal para traders activos; para inversión pasiva, VOO es más barato." },
+        { k: "Dividend Yield", v: "1.2%", def: "Similar a VOO. Los dividendos se pagan trimestralmente." },
+        { k: "Diferencia vs VOO", v: "Mismo índice", def: "SPY tiene mayor liquidez y volumen (mejor para trading). VOO tiene menor costo (mejor para largo plazo). El índice subyacente es idéntico." },
+      ],
+      en: [
+        { k: "Expense Ratio (TER)", v: "0.0945%", def: "Slightly more expensive than VOO (0.03%), though both track the same index. The difference in returns is minimal long-term." },
+        { k: "Index tracked", v: "S&P 500", def: "Same index as VOO. The 500 largest U.S. companies by market capitalization." },
+        { k: "AUM (total assets)", v: "$620B", def: "The largest and most liquid ETF in the world. Its size guarantees very tight spreads when buying or selling." },
+        { k: "Daily liquidity", v: "~$25B/day", def: "The most traded asset in the world. Ideal for active traders; for passive investing, VOO is cheaper." },
+        { k: "Dividend Yield", v: "1.2%", def: "Similar to VOO. Dividends are paid quarterly." },
+        { k: "Difference vs VOO", v: "Same index", def: "SPY has higher liquidity and volume (better for trading). VOO has lower cost (better for long-term). The underlying index is identical." },
+      ],
+    },
+  },
+  MSFT: {
+    name: "Microsoft Corporation",
+    type: "Stock",
+    price: "$510",
+    metrics: {
+      es: [
+        { k: "P/E Ratio (TTM)", v: "38x", def: "El mercado paga $38 por cada $1 de ganancia. Elevado, pero justificado por el crecimiento sostenido de Azure y la apuesta en IA con OpenAI." },
+        { k: "Margen neto", v: "36%", def: "De cada $100 facturados, Microsoft retiene $36. Uno de los márgenes más altos en Big Tech, impulsado por la nube y software." },
+        { k: "ROE", v: "38%", def: "Retorno sobre el capital propio sólido y sostenible. Diferente al ROE inflado de Apple por recompras." },
+        { k: "Ingresos en la nube", v: "~43% del total", def: "Azure es el segundo proveedor de nube del mundo (tras AWS). Es el motor de crecimiento más importante de la empresa." },
+        { k: "Dividend Yield", v: "0.7%", def: "Paga dividendos estables y los ha incrementado cada año por más de 20 años. No es un ETF de dividendos, pero la consistencia es notable." },
+        { k: "Deuda/Capital", v: "0.3x", def: "Muy baja. Microsoft tiene más efectivo que deuda neta. Posición financiera extremadamente sólida." },
+      ],
+      en: [
+        { k: "P/E Ratio (TTM)", v: "38x", def: "The market pays $38 for every $1 of earnings. Elevated, but justified by sustained growth of Azure and AI bet with OpenAI." },
+        { k: "Net Margin", v: "36%", def: "Of every $100 billed, Microsoft keeps $36. One of the highest margins in Big Tech, driven by cloud and software." },
+        { k: "ROE", v: "38%", def: "Solid and sustainable return on equity. Different from Apple's inflated ROE due to buybacks." },
+        { k: "Cloud revenue", v: "~43% of total", def: "Azure is the world's second cloud provider (after AWS). It's the company's most important growth engine." },
+        { k: "Dividend Yield", v: "0.7%", def: "Pays stable dividends and has increased them every year for over 20 years. Not a dividend ETF, but the consistency is notable." },
+        { k: "Debt/Equity", v: "0.3x", def: "Very low. Microsoft has more cash than net debt. Extremely solid financial position." },
+      ],
+    },
+  },
+  AMZN: {
+    name: "Amazon.com Inc.",
+    type: "Stock",
+    price: "$225",
+    metrics: {
+      es: [
+        { k: "P/E Ratio (TTM)", v: "44x", def: "Parece caro, pero Amazon reinvirtió ganancias durante 20 años. Ahora que AWS madura, los márgenes están subiendo aceleradamente." },
+        { k: "Margen neto", v: "9%", def: "Históricamente cercano a 0% porque reinvertía todo. Ahora llega al 9% gracias a AWS (margen ~30%) que subsidia el e-commerce." },
+        { k: "AWS (nube)", v: "~17% ingresos, ~67% utilidad operativa", def: "AWS representa menos del 20% de ingresos pero genera más del 65% de la utilidad operativa. Es el negocio que financia todo lo demás." },
+        { k: "Segmentos", v: "E-commerce, AWS, Publicidad, Prime", def: "La publicidad ya supera los $50B anuales. Prime tiene más de 200M de miembros. Amazon es mucho más que una tienda online." },
+        { k: "Crecimiento ingresos", v: "~11% anual", def: "Crecimiento sólido para una empresa de su tamaño. AWS crece más del 17% anual." },
+        { k: "Sin dividendos", v: "N/A", def: "Amazon no paga dividendos. Prefiere reinvertir en crecimiento: logística, IA, satélites Kuiper, healthcare." },
+      ],
+      en: [
+        { k: "P/E Ratio (TTM)", v: "44x", def: "Looks expensive, but Amazon reinvested profits for 20 years. Now that AWS matures, margins are rising rapidly." },
+        { k: "Net Margin", v: "9%", def: "Historically near 0% because it reinvested everything. Now reaches 9% thanks to AWS (~30% margin) which subsidizes e-commerce." },
+        { k: "AWS (cloud)", v: "~17% revenue, ~67% operating income", def: "AWS represents less than 20% of revenue but generates over 65% of operating income. It's the business that funds everything else." },
+        { k: "Segments", v: "E-commerce, AWS, Advertising, Prime", def: "Advertising already exceeds $50B annually. Prime has over 200M members. Amazon is much more than an online store." },
+        { k: "Revenue growth", v: "~11% annual", def: "Solid growth for a company of its size. AWS grows over 17% annually." },
+        { k: "No dividends", v: "N/A", def: "Amazon pays no dividends. It prefers to reinvest in growth: logistics, AI, Kuiper satellites, healthcare." },
+      ],
+    },
+  },
 };
 
 const GLOSSARY_TERMS = {
@@ -623,6 +692,47 @@ const RISK_SCENARIOS = {
 };
 
 // ── UTILITY ─────────────────────────────────────────────────
+function useLocalStorage(key, initial) {
+  const [val, setVal] = useState(() => {
+    try {
+      const item = localStorage.getItem(key);
+      return item !== null ? JSON.parse(item) : initial;
+    } catch {
+      return initial;
+    }
+  });
+  const set = (v) => {
+    try { localStorage.setItem(key, JSON.stringify(v)); } catch {}
+    setVal(v);
+  };
+  return [val, set];
+}
+
+function useWindowWidth() {
+  const [width, setWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const h = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", h);
+    return () => window.removeEventListener("resize", h);
+  }, []);
+  return width;
+}
+
+function useHashNav() {
+  const getPage = () => {
+    const h = window.location.hash.slice(1);
+    return h || "home";
+  };
+  const [page, setPageState] = useState(getPage);
+  useEffect(() => {
+    const h = () => setPageState(getPage());
+    window.addEventListener("hashchange", h);
+    return () => window.removeEventListener("hashchange", h);
+  }, []);
+  const setPage = (p) => { window.location.hash = p; };
+  return [page, setPage];
+}
+
 function compound(principal, monthly, years, rate) {
   const r = rate / 12;
   const n = years * 12;
@@ -762,7 +872,8 @@ function Quiz({ lang, s }) {
   const questions = QUIZ_QUESTIONS[lang];
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState([]);
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useLocalStorage("quiz-done", false);
+  const [savedAnswers, setSavedAnswers] = useLocalStorage("quiz-answers", []);
 
   const select = (v) => {
     const next = [...answers];
@@ -771,11 +882,13 @@ function Quiz({ lang, s }) {
     if (step < questions.length - 1) {
       setStep(step + 1);
     } else {
+      setSavedAnswers(next);
       setDone(true);
     }
   };
 
-  const score = answers.reduce((a, b) => a + b, 0);
+  const activeAnswers = done ? savedAnswers : answers;
+  const score = activeAnswers.reduce((a, b) => a + b, 0);
   const profileKey = score <= 12 ? "conservative" : score <= 20 ? "moderate" : "aggressive";
   const profile = PROFILES[lang][profileKey];
 
@@ -806,7 +919,7 @@ function Quiz({ lang, s }) {
             {s.disclaimer}
           </p>
           <button
-            onClick={() => { setDone(false); setStep(0); setAnswers([]); }}
+            onClick={() => { setDone(false); setSavedAnswers([]); setStep(0); setAnswers([]); }}
             style={{
               background: COLORS.surface2,
               color: COLORS.textDim,
@@ -1102,8 +1215,8 @@ function Glossary({ lang, s }) {
 // ── CHECKLIST ───────────────────────────────────────────────
 function Checklist({ lang, s }) {
   const items = CHECKLIST_ITEMS[lang];
-  const [notes, setNotes] = useState({});
-  const [done, setDone] = useState({});
+  const [notes, setNotes] = useLocalStorage("checklist-notes", {});
+  const [done, setDone] = useLocalStorage("checklist-done", {});
 
   const allDone = items.every(i => done[i.id]);
 
@@ -1356,10 +1469,14 @@ function Calculator({ lang, s }) {
 
 // ── APP SHELL ────────────────────────────────────────────────
 export default function App() {
-  const [lang, setLang] = useState("es");
-  const [page, setPage] = useState("home");
+  const [lang, setLang] = useLocalStorage("app-lang", "es");
+  const [page, setPage] = useHashNav();
   const [menuOpen, setMenuOpen] = useState(false);
+  const width = useWindowWidth();
+  const isDesktop = width >= 768;
   const s = STR[lang];
+
+  const navItems = ["home", "quiz", "explorer", "glossary", "checklist", "riskcenter", "calculator"];
 
   const pages = {
     home: <Home lang={lang} s={s} onNavigate={setPage} />,
@@ -1371,15 +1488,13 @@ export default function App() {
     calculator: <Calculator lang={lang} s={s} />,
   };
 
-  const navItems = ["home", "quiz", "explorer", "glossary", "checklist", "riskcenter", "calculator"];
-
   return (
     <div style={{ background: COLORS.bg, minHeight: "100vh", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
       {/* Top bar */}
       <div style={{
         background: COLORS.surface,
         borderBottom: `1px solid ${COLORS.line}`,
-        padding: "0 16px",
+        padding: "0 20px",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -1388,16 +1503,45 @@ export default function App() {
         top: 0,
         zIndex: 100,
       }}>
+        {/* Logo */}
         <button
           onClick={() => { setPage("home"); setMenuOpen(false); }}
-          style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}
+          style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}
         >
           <span style={{ fontSize: 22 }}>🌱</span>
           <span style={{ color: COLORS.mint, fontWeight: 800, fontSize: 18 }}>{s.appName}</span>
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {/* Lang toggle */}
+        {/* Desktop nav */}
+        {isDesktop && (
+          <nav style={{ display: "flex", gap: 4, alignItems: "center" }}>
+            {navItems.map(key => (
+              <button
+                key={key}
+                onClick={() => setPage(key)}
+                style={{
+                  background: page === key ? COLORS.surface2 : "none",
+                  border: `1px solid ${page === key ? COLORS.mint + "55" : "transparent"}`,
+                  borderRadius: 8,
+                  padding: "6px 12px",
+                  color: page === key ? COLORS.mint : COLORS.textDim,
+                  cursor: "pointer",
+                  fontWeight: page === key ? 700 : 400,
+                  fontSize: 13,
+                  whiteSpace: "nowrap",
+                  transition: "color 0.15s, background 0.15s",
+                }}
+                onMouseEnter={e => { if (page !== key) e.currentTarget.style.color = COLORS.text; }}
+                onMouseLeave={e => { if (page !== key) e.currentTarget.style.color = COLORS.textDim; }}
+              >
+                {s.nav[key]}
+              </button>
+            ))}
+          </nav>
+        )}
+
+        {/* Right controls */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
           <button
             onClick={() => setLang(lang === "es" ? "en" : "es")}
             style={{
@@ -1413,18 +1557,20 @@ export default function App() {
           >
             {lang === "es" ? "EN" : "ES"}
           </button>
-          {/* Hamburger */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: COLORS.textDim, fontSize: 22 }}
-          >
-            {menuOpen ? "✕" : "☰"}
-          </button>
+          {/* Hamburger — solo en mobile */}
+          {!isDesktop && (
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: COLORS.textDim, fontSize: 22 }}
+            >
+              {menuOpen ? "✕" : "☰"}
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Mobile/side menu */}
-      {menuOpen && (
+      {/* Mobile menu */}
+      {!isDesktop && menuOpen && (
         <div style={{
           position: "fixed",
           top: 60,
@@ -1462,8 +1608,8 @@ export default function App() {
       )}
 
       {/* Content */}
-      <div style={{ maxWidth: 720, margin: "0 auto", padding: "32px 16px 80px" }}>
-        {pages[page]}
+      <div style={{ maxWidth: 760, margin: "0 auto", padding: "32px 16px 80px" }}>
+        {pages[page] ?? pages["home"]}
       </div>
 
       {/* Disclaimer footer */}
