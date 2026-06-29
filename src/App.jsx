@@ -38,6 +38,7 @@ const STR = {
       checklist: "Checklist",
       riskcenter: "Riesgo",
       calculator: "Calculadora",
+      simulator: "Simulador",
     },
     home: {
       hero: "Entiende el mercado antes de invertir",
@@ -47,7 +48,7 @@ const STR = {
       principle: "Nuestro principio",
       principleText:
         "La app educa y muestra datos. Tú decides. Nunca gestionamos tu dinero ni ejecutamos operaciones.",
-      modules: "Los 6 módulos",
+      modules: "Los 7 módulos",
     },
     quiz: {
       title: "¿Cuál es tu perfil de riesgo?",
@@ -96,6 +97,26 @@ const STR = {
       moderate: "Moderado (10% anual)",
       optimistic: "Optimista (13% anual)",
     },
+    simulator: {
+      title: "Simulador de cartera",
+      subtitle: "Distribuye $10,000 virtuales entre activos y ve cómo quedaría tu cartera — sin dinero real",
+      capital: "Capital virtual",
+      allocated: "Asignado",
+      remaining: "Disponible",
+      reset: "Reiniciar",
+      projection: "Proyección a 10 años",
+      diversification: "Diversificación",
+      divLow: "Concentrada — considera diversificar más",
+      divMed: "Moderada — buen balance",
+      divHigh: "Bien diversificada",
+      disclaimer: "Simulación educativa. Los retornos se basan en medias históricas. No garantizan resultados futuros.",
+      emptyMsg: "Asigna capital a los activos para ver tu proyección.",
+      allocation: "Distribución",
+      projected: "Proyectado",
+      assets: "Activos disponibles",
+      add: "Agregar",
+      remove: "Quitar",
+    },
   },
   en: {
     appName: "MiCimiento",
@@ -110,6 +131,7 @@ const STR = {
       checklist: "Checklist",
       riskcenter: "Risk",
       calculator: "Calculator",
+      simulator: "Simulator",
     },
     home: {
       hero: "Understand markets before you invest",
@@ -119,7 +141,7 @@ const STR = {
       principle: "Our principle",
       principleText:
         "The app educates and shows data. You decide. We never manage your money or execute trades.",
-      modules: "The 6 modules",
+      modules: "The 7 modules",
     },
     quiz: {
       title: "What's your risk profile?",
@@ -166,6 +188,26 @@ const STR = {
       conservative: "Conservative (7% annual)",
       moderate: "Moderate (10% annual)",
       optimistic: "Optimistic (13% annual)",
+    },
+    simulator: {
+      title: "Portfolio Simulator",
+      subtitle: "Distribute $10,000 virtual dollars across assets and see how your portfolio would look — no real money",
+      capital: "Virtual capital",
+      allocated: "Allocated",
+      remaining: "Available",
+      reset: "Reset",
+      projection: "10-year projection",
+      diversification: "Diversification",
+      divLow: "Concentrated — consider diversifying more",
+      divMed: "Moderate — good balance",
+      divHigh: "Well diversified",
+      disclaimer: "Educational simulation. Returns are based on historical averages. They do not guarantee future results.",
+      emptyMsg: "Allocate capital to assets to see your projection.",
+      allocation: "Allocation",
+      projected: "Projected",
+      assets: "Available assets",
+      add: "Add",
+      remove: "Remove",
     },
   },
 };
@@ -796,6 +838,7 @@ function Home({ lang, s, onNavigate }) {
     { key: "checklist", icon: "✅", color: COLORS.purple },
     { key: "riskcenter", icon: "🛡️", color: COLORS.red },
     { key: "calculator", icon: "📊", color: COLORS.mint },
+    { key: "simulator", icon: "🎮", color: COLORS.amber },
   ];
   return (
     <div>
@@ -1467,6 +1510,158 @@ function Calculator({ lang, s }) {
   );
 }
 
+// ── SIMULATOR ───────────────────────────────────────────────
+const TICKER_RETURNS = {
+  VOO: 0.105, SPY: 0.104, QQQ: 0.18, SCHD: 0.12,
+  NVDA: 0.40, AAPL: 0.28, MSFT: 0.26, AMZN: 0.22,
+};
+
+const TOTAL_CAPITAL = 10000;
+
+function Simulator({ lang, s }) {
+  const [alloc, setAlloc] = useLocalStorage("sim-alloc", {});
+
+  const tickers = Object.keys(TICKERS);
+  const totalAllocated = Object.values(alloc).reduce((a, b) => a + b, 0);
+  const remaining = TOTAL_CAPITAL - totalAllocated;
+
+  const adjust = (ticker, delta) => {
+    const cur = alloc[ticker] || 0;
+    const next = Math.max(0, Math.min(cur + delta, cur + remaining));
+    if (next === 0) {
+      const copy = { ...alloc };
+      delete copy[ticker];
+      setAlloc(copy);
+    } else {
+      setAlloc({ ...alloc, [ticker]: next });
+    }
+  };
+
+  const reset = () => setAlloc({});
+
+  const activeAlloc = Object.entries(alloc).filter(([, v]) => v > 0);
+
+  const projections = activeAlloc.map(([ticker, amount]) => {
+    const rate = TICKER_RETURNS[ticker] ?? 0.10;
+    const projected = Math.round(amount * Math.pow(1 + rate, 10));
+    return { ticker, amount, projected, rate };
+  });
+
+  const totalProjected = projections.reduce((a, b) => a + b.projected, 0);
+
+  const numAssets = activeAlloc.length;
+  const divScore = numAssets <= 1 ? "low" : numAssets <= 3 ? "med" : "high";
+  const divColor = divScore === "low" ? COLORS.red : divScore === "med" ? COLORS.amber : COLORS.mint;
+  const divLabel = s.simulator[`div${divScore.charAt(0).toUpperCase() + divScore.slice(1)}`];
+
+  const STEP = 500;
+
+  return (
+    <div>
+      <SectionHeader title={s.simulator.title} subtitle={s.simulator.subtitle} />
+
+      {/* Capital bar */}
+      <Card style={{ marginBottom: 24 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+          <span style={{ color: COLORS.textDim, fontSize: 13 }}>{s.simulator.capital}: <span style={{ color: COLORS.text, fontWeight: 700 }}>${TOTAL_CAPITAL.toLocaleString()}</span></span>
+          <span style={{ color: COLORS.textDim, fontSize: 13 }}>{s.simulator.remaining}: <span style={{ color: remaining > 0 ? COLORS.mint : COLORS.textFaint, fontWeight: 700 }}>${remaining.toLocaleString()}</span></span>
+        </div>
+        <div style={{ background: COLORS.surface2, borderRadius: 6, height: 10, overflow: "hidden" }}>
+          <div style={{ background: COLORS.mint, width: `${(totalAllocated / TOTAL_CAPITAL) * 100}%`, height: "100%", transition: "width 0.3s" }} />
+        </div>
+        <div style={{ textAlign: "right", marginTop: 6 }}>
+          <button onClick={reset} style={{ background: "none", border: "none", color: COLORS.textFaint, cursor: "pointer", fontSize: 13 }}>↺ {s.simulator.reset}</button>
+        </div>
+      </Card>
+
+      {/* Asset grid */}
+      <h3 style={{ color: COLORS.textDim, fontSize: 13, fontWeight: 600, marginBottom: 12, letterSpacing: 0.5 }}>{s.simulator.assets.toUpperCase()}</h3>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: 12, marginBottom: 32 }}>
+        {tickers.map(ticker => {
+          const cur = alloc[ticker] || 0;
+          const t = TICKERS[ticker];
+          const pct = totalAllocated > 0 ? Math.round((cur / TOTAL_CAPITAL) * 100) : 0;
+          return (
+            <Card key={ticker} style={{ padding: 16, borderColor: cur > 0 ? COLORS.mint + "55" : COLORS.line }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                <div>
+                  <span style={{ color: COLORS.text, fontWeight: 700, fontSize: 15 }}>{ticker}</span>
+                  <Badge color={t.type === "ETF" ? COLORS.blue : COLORS.mint} style={{ marginLeft: 6 }}>{t.type}</Badge>
+                </div>
+                {cur > 0 && <span style={{ color: COLORS.mint, fontWeight: 700, fontSize: 13 }}>{pct}%</span>}
+              </div>
+              <div style={{ color: COLORS.textFaint, fontSize: 12, marginBottom: 10 }}>{t.name}</div>
+              <div style={{ color: cur > 0 ? COLORS.mint : COLORS.textFaint, fontWeight: 700, fontSize: 16, marginBottom: 10 }}>
+                ${cur.toLocaleString()}
+              </div>
+              <div style={{ display: "flex", gap: 6 }}>
+                <button
+                  onClick={() => adjust(ticker, -STEP)}
+                  disabled={cur === 0}
+                  style={{ flex: 1, background: COLORS.surface2, border: `1px solid ${COLORS.line}`, borderRadius: 8, padding: "6px 0", color: cur === 0 ? COLORS.textFaint : COLORS.text, cursor: cur === 0 ? "default" : "pointer", fontWeight: 700, fontSize: 16 }}
+                >−</button>
+                <button
+                  onClick={() => adjust(ticker, STEP)}
+                  disabled={remaining < STEP}
+                  style={{ flex: 1, background: remaining >= STEP ? COLORS.mint : COLORS.surface2, border: "none", borderRadius: 8, padding: "6px 0", color: remaining >= STEP ? "#0A0F1A" : COLORS.textFaint, cursor: remaining >= STEP ? "pointer" : "default", fontWeight: 700, fontSize: 16 }}
+                >+</button>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Results */}
+      {activeAlloc.length === 0 ? (
+        <Card>
+          <p style={{ color: COLORS.textDim, textAlign: "center", margin: 0 }}>{s.simulator.emptyMsg}</p>
+        </Card>
+      ) : (
+        <>
+          {/* Diversification */}
+          <Card style={{ marginBottom: 20, borderColor: divColor + "44" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ color: COLORS.textDim, fontSize: 13, marginBottom: 4 }}>{s.simulator.diversification}</div>
+                <div style={{ color: divColor, fontWeight: 700 }}>{divLabel}</div>
+              </div>
+              <div style={{ fontSize: 28 }}>{divScore === "low" ? "⚠️" : divScore === "med" ? "⚖️" : "✅"}</div>
+            </div>
+          </Card>
+
+          {/* Breakdown table */}
+          <Card style={{ marginBottom: 20 }}>
+            <div style={{ color: COLORS.textDim, fontSize: 13, fontWeight: 600, marginBottom: 16 }}>{s.simulator.projection}</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {projections.map(({ ticker, amount, projected, rate }) => (
+                <div key={ticker}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                    <span style={{ color: COLORS.text, fontWeight: 700 }}>{ticker}</span>
+                    <span style={{ color: COLORS.mint, fontWeight: 700 }}>${projected.toLocaleString()}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                    <span style={{ color: COLORS.textFaint, fontSize: 12 }}>${amount.toLocaleString()} · {Math.round(rate * 100)}% {lang === "es" ? "retorno hist." : "hist. return"}</span>
+                    <span style={{ color: COLORS.textFaint, fontSize: 12 }}>x{(projected / amount).toFixed(1)}</span>
+                  </div>
+                  <div style={{ background: COLORS.surface2, borderRadius: 3, height: 4, overflow: "hidden" }}>
+                    <div style={{ background: COLORS.mint, width: `${Math.min((amount / TOTAL_CAPITAL) * 100, 100)}%`, height: "100%" }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ borderTop: `1px solid ${COLORS.line}`, marginTop: 16, paddingTop: 16, display: "flex", justifyContent: "space-between" }}>
+              <span style={{ color: COLORS.textDim }}>{s.simulator.projected} total</span>
+              <span style={{ color: COLORS.amber, fontWeight: 800, fontSize: 22 }}>${totalProjected.toLocaleString()}</span>
+            </div>
+          </Card>
+
+          <p style={{ color: COLORS.textFaint, fontSize: 11, lineHeight: 1.6 }}>⚠️ {s.simulator.disclaimer}</p>
+        </>
+      )}
+    </div>
+  );
+}
+
 // ── APP SHELL ────────────────────────────────────────────────
 export default function App() {
   const [lang, setLang] = useLocalStorage("app-lang", "es");
@@ -1476,7 +1671,7 @@ export default function App() {
   const isDesktop = width >= 768;
   const s = STR[lang];
 
-  const navItems = ["home", "quiz", "explorer", "glossary", "checklist", "riskcenter", "calculator"];
+  const navItems = ["home", "quiz", "explorer", "glossary", "checklist", "riskcenter", "calculator", "simulator"];
 
   const pages = {
     home: <Home lang={lang} s={s} onNavigate={setPage} />,
@@ -1486,6 +1681,7 @@ export default function App() {
     checklist: <Checklist lang={lang} s={s} />,
     riskcenter: <RiskCenter lang={lang} s={s} />,
     calculator: <Calculator lang={lang} s={s} />,
+    simulator: <Simulator lang={lang} s={s} />,
   };
 
   return (
