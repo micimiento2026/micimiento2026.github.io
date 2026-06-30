@@ -1,12 +1,787 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MiCimiento</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Cimiento — Aprende a invertir sin que nadie te venda nada</title>
+<meta name="description" content="Mi Cimiento te enseña a leer acciones, ETFs y conceptos clave en español. Datos reales, simulador en vivo, cero recomendaciones de compra.">
+<meta property="og:title" content="Mi Cimiento — Aprende a invertir sin que nadie te venda nada">
+<meta property="og:description" content="Datos reales, simulador en vivo, cero recomendaciones. La base sobre la que decides tú.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://micimiento2026.github.io">
+<meta property="og:image" content="https://micimiento2026.github.io/preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Mi Cimiento — Aprende a invertir sin que nadie te venda nada">
+<meta name="twitter:description" content="Datos reales, simulador en vivo, cero recomendaciones. La base sobre la que decides tú.">
+<meta name="twitter:image" content="https://micimiento2026.github.io/preview.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23161b22'/%3E%3Cpath d='M9 9 L9 23 L23 23' stroke='%23c9703f' stroke-width='3' fill='none'/%3E%3C/svg%3E">
+<!-- NOTA: sube un preview.png (1200x630px) a la raíz del repo para que esta vista previa funcione en redes -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bedrock:#161b22;
+    --strata1:#1f2630;
+    --strata2:#2a3340;
+    --blueprint:#5fa8a3;
+    --clay:#c9703f;
+    --paper:#ece5d8;
+    --paper-dim:#a9a297;
+    --line:rgba(95,168,163,0.25);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bedrock);
+    color:var(--paper);
+    font-family:'Source Serif 4', serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+  h1,h2,h3,.eyebrow,.cta,nav,.stat{font-family:'Space Grotesk', sans-serif;}
+  .mono{font-family:'JetBrains Mono', monospace;}
+
+  /* background blueprint grid */
+  .grid-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:48px 48px;
+    opacity:0.35;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+  }
+
+  nav{
+    position:relative; z-index:2;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:28px 6vw;
+    font-size:0.95rem;
+    letter-spacing:0.02em;
+  }
+  nav .brand{font-weight:700; font-size:1.1rem; display:flex; align-items:center; gap:10px;}
+  nav .brand .mark{
+    width:18px;height:18px;border:2px solid var(--clay);
+    border-top:none;
+  }
+  nav .lang{color:var(--paper-dim); font-size:0.8rem;}
+
+  header.hero{
+    position:relative; z-index:2;
+    padding:8vh 6vw 10vh;
+    max-width:920px;
+  }
+  .eyebrow{
+    color:var(--blueprint);
+    font-size:0.8rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    margin-bottom:22px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:"";width:28px;height:1px;background:var(--blueprint);}
+
+  h1{
+    font-size:clamp(2.3rem, 6vw, 4.1rem);
+    font-weight:600;
+    line-height:1.08;
+    letter-spacing:-0.01em;
+    color:var(--paper);
+    max-width:14ch;
+  }
+  h1 em{
+    font-style:normal;
+    color:var(--clay);
+  }
+
+  .sub{
+    margin-top:28px;
+    font-size:clamp(1.05rem, 1.6vw, 1.25rem);
+    color:var(--paper-dim);
+    max-width:46ch;
+    font-family:'Source Serif 4', serif;
+  }
+
+  .signup{
+    margin-top:48px;
+    display:flex; flex-wrap:wrap; gap:12px;
+    max-width:520px;
+  }
+  .signup input[type=email]{
+    flex:1; min-width:220px;
+    background:var(--strata1);
+    border:1px solid var(--line);
+    color:var(--paper);
+    padding:16px 18px;
+    font-size:1rem;
+    font-family:'JetBrains Mono', monospace;
+    border-radius:2px;
+  }
+  .signup input[type=email]::placeholder{color:var(--paper-dim);}
+  .signup input[type=email]:focus{
+    outline:2px solid var(--blueprint);
+    outline-offset:2px;
+  }
+  .cta{
+    background:var(--clay);
+    color:var(--bedrock);
+    border:none;
+    padding:16px 26px;
+    font-size:0.95rem;
+    font-weight:600;
+    letter-spacing:0.02em;
+    cursor:pointer;
+    border-radius:2px;
+    transition:transform 0.15s ease, background 0.15s ease;
+  }
+  .cta:hover{background:#dd7d49; transform:translateY(-1px);}
+  .cta:focus-visible{outline:2px solid var(--paper); outline-offset:3px;}
+
+  .form-note{
+    margin-top:14px;
+    font-size:0.82rem;
+    color:var(--paper-dim);
+    font-family:'JetBrains Mono', monospace;
+  }
+  .form-note strong{color:var(--blueprint);}
+
+  .slots{
+    margin-top:18px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:0.78rem;
+    color:var(--paper-dim);
+    letter-spacing:0.03em;
+  }
+  .slots-dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--clay);
+    box-shadow:0 0 0 3px rgba(201,112,63,0.18);
+  }
+
+  .thanks{
+    display:none;
+    margin-top:48px;
+    max-width:520px;
+    padding:20px 22px;
+    border:1px solid var(--blueprint);
+    background:rgba(95,168,163,0.08);
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.92rem;
+  }
+  .thanks.show{display:block;}
+
+  /* pillars */
+  .pillars{
+    position:relative; z-index:2;
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:var(--line);
+    margin:0 6vw;
+    border:1px solid var(--line);
+  }
+  .pillar{
+    background:var(--bedrock);
+    padding:38px 30px;
+  }
+  .pillar .num{
+    color:var(--blueprint);
+    font-size:0.75rem;
+    letter-spacing:0.1em;
+  }
+  .pillar h3{
+    margin-top:14px;
+    font-size:1.15rem;
+    font-weight:600;
+  }
+  .pillar p{
+    margin-top:10px;
+    font-size:0.95rem;
+    color:var(--paper-dim);
+  }
+
+  /* foundation diagram */
+  .foundation{
+    position:relative; z-index:2;
+    padding:14vh 6vw 12vh;
+    max-width:780px;
+    margin:0 auto;
+  }
+  .foundation .heading{
+    text-align:center;
+    margin-bottom:64px;
+  }
+  .foundation h2{
+    font-size:clamp(1.7rem, 3vw, 2.4rem);
+    font-weight:600;
+  }
+  .foundation .heading p{
+    margin-top:14px;
+    color:var(--paper-dim);
+    font-size:1.02rem;
+  }
+
+  .strata-stack{
+    display:flex;
+    flex-direction:column-reverse;
+    gap:2px;
+  }
+  .stratum{
+    display:grid;
+    grid-template-columns:64px 1fr;
+    align-items:center;
+    background:var(--strata1);
+    border-left:3px solid var(--blueprint);
+    padding:20px 24px;
+    position:relative;
+  }
+  .stratum:nth-child(odd){background:var(--strata2);}
+  .stratum .depth{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--paper-dim);
+    font-size:0.78rem;
+  }
+  .stratum .label strong{
+    display:block;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1.02rem;
+    font-weight:500;
+    color:var(--paper);
+  }
+  .stratum .label span{
+    display:block;
+    margin-top:4px;
+    font-size:0.88rem;
+    color:var(--paper-dim);
+  }
+  .stratum.bedrock-layer{
+    border-left-color:var(--clay);
+  }
+
+  /* versus / differentiation */
+  .versus{
+    position:relative; z-index:2;
+    padding:13vh 6vw 13vh;
+    max-width:980px;
+    margin:0 auto;
+  }
+  .versus-head{text-align:center; margin-bottom:56px;}
+  .versus-head h2{
+    margin-top:18px;
+    font-size:clamp(1.4rem, 2.8vw, 2.1rem);
+    font-weight:600;
+    line-height:1.3;
+  }
+  .versus-table{
+    border:1px solid var(--line);
+  }
+  .versus-row{
+    display:grid;
+    grid-template-columns:1.1fr 1fr 1fr;
+    border-bottom:1px solid var(--line);
+  }
+  .versus-row:last-child{border-bottom:none;}
+  .versus-row > div{
+    padding:18px 20px;
+    font-size:0.92rem;
+  }
+  .versus-row > div:first-child{
+    color:var(--paper-dim);
+    font-size:0.85rem;
+    background:var(--strata1);
+  }
+  .versus-row > div:nth-child(2){
+    color:var(--paper-dim);
+  }
+  .versus-row > div.accent,
+  .versus-row > div:nth-child(3){
+    background:rgba(95,168,163,0.06);
+  }
+  .versus-header > div{
+    font-size:0.74rem !important;
+    letter-spacing:0.06em;
+    color:var(--paper-dim);
+    text-transform:uppercase;
+    background:transparent !important;
+  }
+  .versus-header .accent{color:var(--blueprint) !important;}
+
+  @media (max-width:760px){
+    .versus-row{grid-template-columns:1fr;}
+    .versus-row > div:first-child{font-weight:600; color:var(--paper);}
+  }
+
+  /* simulator section */
+  .simulator{
+    position:relative; z-index:2;
+    padding:6vh 6vw 12vh;
+    max-width:1080px;
+    margin:0 auto;
+  }
+  .sim-grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:48px;
+    align-items:start;
+  }
+  .sim-copy h2{
+    margin-top:18px;
+    font-size:clamp(1.5rem, 2.8vw, 2rem);
+    font-weight:600;
+    line-height:1.18;
+  }
+  .sim-copy > p{
+    margin-top:18px;
+    color:var(--paper-dim);
+    font-size:1.02rem;
+    max-width:52ch;
+  }
+  .sim-points{
+    list-style:none;
+    margin-top:24px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .sim-points li{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:0.95rem;
+    color:var(--paper);
+    display:flex;
+    gap:10px;
+    max-width:48ch;
+  }
+  .sim-points li .mono{color:var(--blueprint); flex-shrink:0;}
+  .sim-disclaimer{
+    margin-top:26px;
+    font-size:0.76rem;
+    color:var(--paper-dim);
+    border-left:2px solid var(--line);
+    padding-left:12px;
+  }
+  .sim-panel{
+    background:var(--strata1);
+    border:1px solid var(--line);
+    border-top:3px solid var(--clay);
+    padding:0;
+  }
+  .sim-panel-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:16px 20px;
+    border-bottom:1px solid var(--line);
+    font-size:0.74rem;
+    letter-spacing:0.08em;
+    color:var(--paper-dim);
+  }
+  .sim-live{color:var(--blueprint);}
+  .sim-row{
+    display:flex; justify-content:space-between;
+    padding:16px 20px;
+    border-bottom:1px solid var(--line);
+    font-family:'Space Grotesk', sans-serif;
+    font-size:0.92rem;
+  }
+  .sim-row span:last-child{color:var(--paper-dim); font-size:0.8rem;}
+  .sim-footnote{
+    padding:14px 20px;
+    font-size:0.72rem;
+    color:var(--paper-dim);
+  }
+
+  @media (max-width:760px){
+    .sim-grid{grid-template-columns:1fr;}
+  }
+
+  /* principle banner */
+  .principle{
+    position:relative; z-index:2;
+    margin:0 6vw 14vh;
+    padding:56px 6vw;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    text-align:center;
+  }
+  .principle p{
+    font-size:clamp(1.3rem, 2.6vw, 1.9rem);
+    max-width:18ch;
+    margin:0 auto;
+    font-family:'Source Serif 4', serif;
+    font-style:italic;
+    color:var(--paper);
+  }
+  .principle p strong{
+    font-style:normal;
+    color:var(--clay);
+  }
+
+  /* final cta */
+  .final-cta{
+    position:relative; z-index:2;
+    padding:8vh 6vw 12vh;
+    text-align:center;
+  }
+  .final-cta h2{
+    font-size:clamp(1.6rem, 3.4vw, 2.3rem);
+    font-weight:600;
+    max-width:16ch;
+    margin:0 auto 16px;
+  }
+  .final-cta .signup{margin:36px auto 0; justify-content:center;}
+  .final-cta .form-note{text-align:center;}
+  .final-cta .thanks{margin:36px auto 0;}
+
+  /* faq */
+  .faq{
+    position:relative; z-index:2;
+    padding:6vh 6vw 10vh;
+    max-width:720px;
+    margin:0 auto;
+  }
+  .faq h2{
+    text-align:center;
+    margin-top:14px;
+    font-size:clamp(1.4rem, 2.6vw, 1.9rem);
+    font-weight:600;
+    margin-bottom:40px;
+  }
+  .faq-list{display:flex; flex-direction:column; gap:1px; background:var(--line); border:1px solid var(--line);}
+  .faq-item{background:var(--bedrock); padding:0;}
+  .faq-item summary{
+    cursor:pointer;
+    list-style:none;
+    padding:20px 24px;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:0.98rem;
+    font-weight:500;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .faq-item summary::-webkit-details-marker{display:none;}
+  .faq-item summary::after{
+    content:"+";
+    color:var(--blueprint);
+    font-size:1.2rem;
+    flex-shrink:0;
+    margin-left:16px;
+  }
+  .faq-item[open] summary::after{content:"–";}
+  .faq-item p{
+    padding:0 24px 22px;
+    color:var(--paper-dim);
+    font-size:0.92rem;
+    max-width:54ch;
+  }
+
+  /* sticky mobile cta */
+  .sticky-cta{
+    position:fixed;
+    bottom:0; left:0; right:0;
+    z-index:10;
+    display:none;
+    background:var(--strata1);
+    border-top:1px solid var(--line);
+    padding:14px 5vw;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+  }
+  .sticky-cta span{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:0.85rem;
+    color:var(--paper);
+  }
+  .sticky-cta .cta{padding:12px 20px; font-size:0.88rem; white-space:nowrap;}
+  @media (max-width:640px){
+    .sticky-cta.show{display:flex;}
+    body{padding-bottom:0;}
+  }
+
+  footer{
+    position:relative; z-index:2;
+    padding:32px 6vw 48px;
+    border-top:1px solid var(--line);
+    display:flex; flex-wrap:wrap; gap:16px; justify-content:space-between;
+    font-size:0.78rem;
+    color:var(--paper-dim);
+  }
+  footer .disclaimer{max-width:48ch;}
+
+  @media (max-width:760px){
+    .pillars{grid-template-columns:1fr;}
+    .stratum{grid-template-columns:48px 1fr; padding:16px 18px;}
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<nav>
+  <div class="brand"><span class="mark"></span>Mi Cimiento</div>
+  <div class="lang mono">ES / EN</div>
+</nav>
+
+<header class="hero">
+  <div class="eyebrow">No es otra señal de compra</div>
+  <h1>Todos te dicen <em>qué</em> comprar. Nadie te enseña <em>por qué</em>.</h1>
+  <p class="sub">Antes de poner un dólar en bolsa, descubre si realmente entiendes lo que estás comprando. Datos reales, simulador en vivo, cero recomendaciones — la decisión siempre es tuya.</p>
+
+  <form class="signup" id="waitlistForm" method="POST">
+    <label for="email" class="sr-only" style="position:absolute;left:-9999px;">Correo electrónico</label>
+    <input type="email" id="email" name="email" placeholder="tucorreo@ejemplo.com" required>
+    <button type="submit" class="cta">Sé de los primeros 10</button>
+  </form>
+  <p class="form-note">Sin spam. Solo te escribimos cuando tu cupo en la <strong>beta cerrada</strong> esté listo.</p>
+  <div class="slots mono" id="slotsIndicator">
+    <span class="slots-dot"></span> Beta cerrada — cupo limitado a los primeros 10
+  </div>
+  <div class="thanks" id="thanksMsg">✓ Listo. Guardamos tu lugar — te contactaremos apenas abramos los primeros cupos de la beta.</div>
+</header>
+
+<section class="pillars">
+  <div class="pillar">
+    <div class="num mono">01</div>
+    <h3>Educa, no vende</h3>
+    <p>Nunca te decimos qué acción o ETF comprar. Te damos las herramientas para que decidas con criterio propio.</p>
+  </div>
+  <div class="pillar">
+    <div class="num mono">02</div>
+    <h3>Datos reales</h3>
+    <p>Métricas, simulaciones y backtesting histórico — no opiniones de redes sociales ni promesas de rendimiento.</p>
+  </div>
+  <div class="pillar">
+    <div class="num mono">03</div>
+    <h3>En tu idioma</h3>
+    <p>Pensada en español desde el inicio, sin jerga financiera traducida a medias ni términos que nadie te explicó.</p>
+  </div>
+</section>
+
+<section class="versus">
+  <div class="versus-head">
+    <div class="eyebrow">La diferencia real</div>
+    <h2>El mercado está lleno de gente diciéndote qué comprar.<br>Nosotros te enseñamos a no necesitarlo.</h2>
+  </div>
+  <div class="versus-table">
+    <div class="versus-row versus-header">
+      <div></div>
+      <div class="mono">Apps de señales / influencers</div>
+      <div class="mono accent">Mi Cimiento</div>
+    </div>
+    <div class="versus-row">
+      <div>¿Qué te dicen?</div>
+      <div>"Compra esto ahora"</div>
+      <div class="accent">"Esto significa este número, decide tú"</div>
+    </div>
+    <div class="versus-row">
+      <div>¿Quién gana si reaccionas rápido?</div>
+      <div>Ellos, con tu suscripción o tu clic</div>
+      <div class="accent">Nadie — no vendemos reacción, vendemos criterio</div>
+    </div>
+    <div class="versus-row">
+      <div>¿Practicas antes de arriesgar?</div>
+      <div>Casi nunca</div>
+      <div class="accent">Simulador con precios reales, sin tu dinero</div>
+    </div>
+    <div class="versus-row">
+      <div>¿En qué idioma piensan los términos?</div>
+      <div>Inglés traducido a medias</div>
+      <div class="accent">Español, desde el primer concepto</div>
+    </div>
+    <div class="versus-row">
+      <div>¿Qué pasa si dejas de pagar?</div>
+      <div>Dejas de recibir "señales"</div>
+      <div class="accent">Ya sabes leer el mercado tú mismo</div>
+    </div>
+  </div>
+</section>
+
+<section class="foundation">
+  <div class="heading">
+    <h2>Seis capas, una base sólida</h2>
+    <p>Cada módulo se apoya en el anterior — como cualquier cimiento real.</p>
+  </div>
+  <div class="strata-stack">
+    <div class="stratum bedrock-layer">
+      <div class="depth">N1</div>
+      <div class="label"><strong>Perfil de riesgo</strong><span>Un quiz corto que entiende cómo tomas decisiones financieras.</span></div>
+    </div>
+    <div class="stratum">
+      <div class="depth">N2</div>
+      <div class="label"><strong>Explorador de activos</strong><span>Acciones y ETFs con métricas explicadas, sin recomendaciones.</span></div>
+    </div>
+    <div class="stratum">
+      <div class="depth">N3</div>
+      <div class="label"><strong>Glosario</strong><span>Cada término financiero, explicado en lenguaje claro.</span></div>
+    </div>
+    <div class="stratum">
+      <div class="depth">N4</div>
+      <div class="label"><strong>Checklist pre-inversión</strong><span>Lo que deberías revisar antes de poner tu dinero en algo.</span></div>
+    </div>
+    <div class="stratum">
+      <div class="depth">N5</div>
+      <div class="label"><strong>Centro de riesgo</strong><span>Cómo pensar las caídas de mercado antes de que sucedan.</span></div>
+    </div>
+    <div class="stratum">
+      <div class="depth">N6</div>
+      <div class="label"><strong>Calculadora de interés compuesto</strong><span>Simulaciones con rangos históricos reales, nunca una sola cifra prometida.</span></div>
+    </div>
+    <div class="stratum bedrock-layer">
+      <div class="depth">N7</div>
+      <div class="label"><strong>Simulador de inversiones</strong><span>Practica con precios reales del mercado, en tiempo real, sin arriesgar un solo dólar.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="simulator">
+  <div class="sim-grid">
+    <div class="sim-copy">
+      <div class="eyebrow">La capa más alta del cimiento</div>
+      <h2>Practica con el mercado real, no con números inventados</h2>
+      <p>El simulador usa precios reales y en tiempo real de acciones y ETFs — las mismas subidas, bajadas y noticias que vive el mercado de verdad. La diferencia es que aquí cada decisión es para aprender, no para arriesgar tu dinero.</p>
+      <ul class="sim-points">
+        <li><span class="mono">→</span> Compras y ventas simuladas con cotizaciones actuales, no datos retrasados ni inventados.</li>
+        <li><span class="mono">→</span> Ves cómo se comporta tu cartera simulada frente a eventos reales del mercado, mientras todavía estás aprendiendo.</li>
+        <li><span class="mono">→</span> El objetivo nunca es "ganarle al mercado" — es que entiendas por qué tu cartera sube o baja, sin presión real.</li>
+      </ul>
+      <p class="sim-disclaimer mono">El desempeño del simulador es solo con fines de aprendizaje. No es asesoría de inversión ni garantía de resultados reales.</p>
+    </div>
+    <div class="sim-panel">
+      <div class="sim-panel-head">
+        <span class="mono">CARTERA SIMULADA</span>
+        <span class="mono sim-live">● EN VIVO</span>
+      </div>
+      <div class="sim-row"><span>VOO</span><span class="mono">precio real de mercado</span></div>
+      <div class="sim-row"><span>NVDA</span><span class="mono">precio real de mercado</span></div>
+      <div class="sim-row"><span>MSFT</span><span class="mono">precio real de mercado</span></div>
+      <div class="sim-footnote mono">Datos de mercado en tiempo real · uso educativo</div>
+    </div>
+  </div>
+</section>
+
+<section class="principle">
+  <p>No te decimos qué comprar.<br><strong>Te enseñamos a decidirlo tú mismo.</strong></p>
+</section>
+
+<section class="faq">
+  <div class="eyebrow" style="justify-content:center;">Antes de que te vayas</div>
+  <h2>Las preguntas que normalmente harías</h2>
+  <div class="faq-list">
+    <details class="faq-item">
+      <summary>¿Es gratis durante la beta?</summary>
+      <p>Sí. Los primeros 10 usuarios prueban Mi Cimiento sin costo, a cambio de su feedback honesto sobre qué funciona y qué no.</p>
+    </details>
+    <details class="faq-item">
+      <summary>¿En algún momento me van a recomendar qué comprar?</summary>
+      <p>No. Es el principio que no negociamos: mostramos datos, simulaciones y explicaciones — la decisión de comprar o no siempre es tuya.</p>
+    </details>
+    <details class="faq-item">
+      <summary>¿Necesito experiencia previa para usarla?</summary>
+      <p>No. Está construida pensando en gente que nunca invirtió un dólar, con cada concepto explicado desde cero, en español.</p>
+    </details>
+    <details class="faq-item">
+      <summary>¿Qué pasa con mis datos si dejo el correo?</summary>
+      <p>Solo lo usamos para avisarte cuándo te toca tu cupo en la beta. Nada de venderlo ni mandarte publicidad de terceros.</p>
+    </details>
+    <details class="faq-item">
+      <summary>¿El simulador usa dinero real?</summary>
+      <p>No, nunca. Usa precios reales del mercado para que la práctica sea realista, pero tu dinero jamás está en juego ahí.</p>
+    </details>
+  </div>
+</section>
+
+<section class="final-cta">
+  <h2>¿Listo para construir tu propio criterio?</h2>
+  <form class="signup" id="waitlistForm2" method="POST">
+    <input type="email" id="email2" name="email2" placeholder="tucorreo@ejemplo.com" required>
+    <button type="submit" class="cta">Unirme a la lista de espera</button>
+  </form>
+  <p class="form-note">Cupos limitados para la beta cerrada — primero en llegar, primero en probar.</p>
+  <div class="thanks" id="thanksMsg2">✓ Listo. Guardamos tu lugar — te contactaremos apenas abramos los primeros cupos de la beta.</div>
+</section>
+
+<footer>
+  <div>Mi Cimiento · 2026</div>
+  <div class="disclaimer">Mi Cimiento es una herramienta educativa. No recomienda la compra ni venta de activos específicos. La información mostrada no constituye asesoría financiera.</div>
+</footer>
+
+<div class="sticky-cta" id="stickyCta">
+  <span>Cupo limitado a 10 — Mi Cimiento</span>
+  <button class="cta" id="stickyCtaBtn">Unirme</button>
+</div>
+
+<script>
+  // ============================================================
+  // ÚNICO PASO QUE TIENES QUE HACER (5 minutos, una sola vez):
+  // 1. Entra a https://formspree.io/register y crea una cuenta gratis
+  //    (con tu email reygarciaarias79@gmail.com).
+  // 2. Crea un formulario nuevo. Te va a dar un código corto,
+  //    algo como "xqkzwabc".
+  // 3. Pega ese código aquí abajo, entre las comillas:
+  const FORMSPREE_ID = "mnjkbrqb";
+  // 4. Guarda el archivo y vuelve a subirlo a GitHub Pages. Listo —
+  //    cada correo que alguien deje te va a llegar a tu bandeja
+  //    de entrada y va a quedar guardado en tu panel de Formspree.
+  // ============================================================
+  document.getElementById('waitlistForm').action = `https://formspree.io/f/${FORMSPREE_ID}`;
+  document.getElementById('waitlistForm2').action = `https://formspree.io/f/${FORMSPREE_ID}`;
+
+  function wireForm(formId, inputId, thanksId){
+    const form = document.getElementById(formId);
+    const thanks = document.getElementById(thanksId);
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+      const input = document.getElementById(inputId);
+      if(!input.value) return;
+      const btn = form.querySelector('button');
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      try{
+        if(form.action.includes('TU_ID_AQUI')){
+          // Formspree todavía no está conectado: solo mostramos el mensaje
+          // para que puedas seguir probando el diseño mientras lo configuras.
+          console.warn('Formspree no conectado — este correo NO se guardó en ningún lado.');
+        } else {
+          await fetch(form.action, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' },
+            body: new FormData(form)
+          });
+        }
+        form.style.display = 'none';
+        thanks.classList.add('show');
+      } catch(err){
+        btn.disabled = false;
+        btn.textContent = originalText;
+        alert('Hubo un problema al enviar. Intenta de nuevo en un momento.');
+      }
+    });
+  }
+  wireForm('waitlistForm', 'email', 'thanksMsg');
+  wireForm('waitlistForm2', 'email2', 'thanksMsg2');
+
+  // sticky CTA: aparece tras pasar el hero, se oculta cerca del formulario final
+  const stickyCta = document.getElementById('stickyCta');
+  const heroForm = document.getElementById('waitlistForm');
+  const finalForm = document.getElementById('waitlistForm2');
+  function toggleSticky(){
+    const heroBottom = heroForm.getBoundingClientRect().bottom;
+    const finalTop = finalForm.getBoundingClientRect().top;
+    const shouldShow = heroBottom < 0 && finalTop > window.innerHeight;
+    stickyCta.classList.toggle('show', shouldShow);
+  }
+  window.addEventListener('scroll', toggleSticky, { passive: true });
+  toggleSticky();
+  document.getElementById('stickyCtaBtn').addEventListener('click', function(){
+    document.getElementById('email').focus();
+    heroForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+</script>
+
+</body>
 </html>
